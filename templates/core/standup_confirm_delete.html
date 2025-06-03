@@ -1,0 +1,115 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="content-card">
+        <h2>Delete Stand-up Entry</h2>
+        <div class="confirmation-message">
+            <p>Are you sure you want to delete this stand-up entry?</p>
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        <div class="entry-preview">
+            <div class="preview-section">
+                <h3>Yesterday's Work</h3>
+                <p>{{ entry.yesterday }}</p>
+            </div>
+            <div class="preview-section">
+                <h3>Today's Plan</h3>
+                <p>{{ entry.today }}</p>
+            </div>
+            {% if entry.blockers %}
+            <div class="preview-section">
+                <h3>Blockers</h3>
+                <p>{{ entry.blockers }}</p>
+            </div>
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="button danger">Delete Entry</button>
+                <a href="{% url 'home' %}" class="button secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.content-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content-card h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.confirmation-message {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.confirmation-message p {
+    margin: 0.5rem 0;
+}
+
+.warning-text {
+    color: var(--danger-color);
+    font-weight: 500;
+}
+
+.entry-preview {
+    background: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+}
+
+.preview-section {
+    margin-bottom: 1.5rem;
+}
+
+.preview-section:last-child {
+    margin-bottom: 0;
+}
+
+.preview-section h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.preview-section p {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-actions button,
+.form-actions a {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %} 

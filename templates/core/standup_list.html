@@ -1,0 +1,363 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Stand-up History{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="content-header">
+        <h2>My Stand-up History</h2>
+    </div>
+
+    <div class="filters">
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <label for="team">Team:</label>
+                <select name="team" id="team" onchange="this.form.submit()">
+                    <option value="">All Teams</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}" {% if selected_team == team.id|stringformat:"i" %}selected{% endif %}>
+                        {{ team.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select name="status" id="status" onchange="this.form.submit()">
+                    <option value="">All Status</option>
+                    <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="blocked" {% if selected_status == 'blocked' %}selected{% endif %}>Blocked</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if entries %}
+    <div class="entries-list">
+        {% for entry in entries %}
+        <div class="entry-card">
+            <div class="entry-header">
+                <div class="entry-info">
+                    <h3>{{ entry.team.name }}</h3>
+                    <span class="date">{{ entry.date|date:"F j, Y" }}</span>
+                </div>
+                <div class="entry-actions">
+                    <a href="{% url 'standup_edit' entry.id %}" class="button secondary">Edit</a>
+                    <a href="{% url 'standup_delete' entry.id %}" class="button danger">Delete</a>
+                </div>
+            </div>
+            
+            <div class="entry-content">
+                <div class="entry-section">
+                    <div class="section-header">
+                        <h4>Yesterday's Work</h4>
+                        {% if not entry.yesterday_summary %}
+                        <form method="post" action="{% url 'standup_edit' entry.id %}" class="generate-summary-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="generate_summary" value="yesterday">
+                            <button type="submit" class="button small">Generate Summary</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <p>{{ entry.yesterday }}</p>
+                    {% if entry.yesterday_summary %}
+                    <div class="summary-section">
+                        <button class="summary-toggle" onclick="toggleSummary(this)">Show Summary</button>
+                        <div class="summary" style="display: none;">
+                            {{ entry.yesterday_summary }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="entry-section">
+                    <div class="section-header">
+                        <h4>Today's Plan</h4>
+                        {% if not entry.today_summary %}
+                        <form method="post" action="{% url 'standup_edit' entry.id %}" class="generate-summary-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="generate_summary" value="today">
+                            <button type="submit" class="button small">Generate Summary</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <p>{{ entry.today }}</p>
+                    {% if entry.today_summary %}
+                    <div class="summary-section">
+                        <button class="summary-toggle" onclick="toggleSummary(this)">Show Summary</button>
+                        <div class="summary" style="display: none;">
+                            {{ entry.today_summary }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if entry.blockers %}
+                <div class="entry-section">
+                    <div class="section-header">
+                        <h4>Blockers</h4>
+                        {% if not entry.blockers_summary %}
+                        <form method="post" action="{% url 'standup_edit' entry.id %}" class="generate-summary-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="generate_summary" value="blockers">
+                            <button type="submit" class="button small">Generate Summary</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <p>{{ entry.blockers }}</p>
+                    {% if entry.blockers_summary %}
+                    <div class="summary-section">
+                        <button class="summary-toggle" onclick="toggleSummary(this)">Show Summary</button>
+                        <div class="summary" style="display: none;">
+                            {{ entry.blockers_summary }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-entries">
+        <p>No stand-up entries found.</p>
+        <a href="{% url 'standup_create' %}" class="button primary">Create New Entry</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.page-container {
+    max-width: 1200px;
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.content-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.content-header h2 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.875rem;
+    font-weight: 600;
+}
+
+.filters {
+    margin-bottom: var(--spacing-xl);
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--card-shadow);
+}
+
+.filter-form {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.form-group select {
+    padding: var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: white;
+    color: var(--text-color);
+    transition: all var(--transition-speed);
+    cursor: pointer;
+}
+
+.form-group select:hover {
+    border-color: var(--primary-color);
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.entry-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.entry-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+}
+
+.entry-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--secondary-color);
+}
+
+.entry-info h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: var(--spacing-xs);
+    display: block;
+}
+
+.entry-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.entry-content {
+    padding: var(--spacing-lg);
+}
+
+.entry-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.entry-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.section-header h4 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.generate-summary-form {
+    margin: 0;
+}
+
+.button.small {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem;
+}
+
+.summary-section {
+    margin-top: var(--spacing-md);
+}
+
+.summary-toggle {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    transition: color var(--transition-speed);
+}
+
+.summary-toggle:hover {
+    color: var(--primary-hover);
+}
+
+.summary {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--secondary-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.no-entries {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--card-shadow);
+}
+
+.no-entries p {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .filters {
+        padding: var(--spacing-md);
+    }
+
+    .filter-form {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .entry-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+
+    .entry-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+    }
+}
+</style>
+
+<script>
+function toggleSummary(button) {
+    const summary = button.nextElementSibling;
+    const isVisible = summary.style.display !== 'none';
+    
+    summary.style.display = isVisible ? 'none' : 'block';
+    button.textContent = isVisible ? 'Show Summary' : 'Hide Summary';
+}
+</script>
+{% endblock %}

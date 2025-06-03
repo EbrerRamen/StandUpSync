@@ -1,0 +1,380 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="content-card">
+        <div class="team-header">
+            <h2>{{ team.name }}</h2>
+            {% if is_creator %}
+            <div class="team-actions">
+                <a href="{% url 'team_edit' team.id %}" class="button secondary">Edit Team</a>
+                <form method="post" action="{% url 'team_delete' team.id %}" class="delete-form">
+                    {% csrf_token %}
+                    <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to delete this team?')">Delete Team</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="team-info">
+            <div class="info-section">
+                <h3>Team Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Team Lead:</span>
+                        <span class="value">{{ team.creator.username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Members:</span>
+                        <span class="value">{{ members.count }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Created:</span>
+                        <span class="value">{{ team.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Team Code:</span>
+                        <div class="team-code">
+                            <code>{{ team.invite_code }}</code>
+                            <button onclick="copyToClipboard('{{ team.invite_code }}')" class="button secondary">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="section-header">
+                    <h3>Team Members</h3>
+                    {% if is_creator %}
+                    <form method="post" action="{% url 'team_remove_member' team.id 0 %}" id="bulk-remove-form" class="bulk-actions" style="display: none;">
+                        {% csrf_token %}
+                        <input type="hidden" name="membership_ids" id="membership-ids">
+                        <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove the selected members?')">
+                            Remove Selected
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="members-list">
+                    {% for member in members %}
+                    <div class="member-item">
+                        {% if is_creator and member.user != team.creator %}
+                        <div class="member-select">
+                            <input type="checkbox" 
+                                   id="member-{{ member.id }}" 
+                                   class="member-checkbox" 
+                                   data-id="{{ member.id }}"
+                                   onchange="updateBulkActions()">
+                            <label for="member-{{ member.id }}"></label>
+                        </div>
+                        {% endif %}
+                        <div class="member-info">
+                            <span class="member-name">{{ member.user.username }}</span>
+                            <span class="badge {% if member.role == 'lead' %}lead{% endif %}">
+                                {{ member.get_role_display }}
+                            </span>
+                        </div>
+                        {% if is_creator and member.user != team.creator %}
+                        <div class="member-actions">
+                            <form method="post" action="{% url 'team_change_role' team.id member.id %}" class="role-form">
+                                {% csrf_token %}
+                                <select name="role" onchange="this.form.submit()" class="role-select">
+                                    {% for role_value, role_name in member.ROLE_CHOICES %}
+                                    <option value="{{ role_value }}" {% if member.role == role_value %}selected{% endif %}>
+                                        {{ role_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            <form method="post" action="{% url 'team_remove_member' team.id member.id %}" class="remove-form">
+                                {% csrf_token %}
+                                <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this member?')">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-md);
+}
+
+.content-card {
+    background: white;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--card-shadow);
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.team-header h2 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.875rem;
+    font-weight: 600;
+}
+
+.team-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.info-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.info-section:last-child {
+    margin-bottom: 0;
+}
+
+.info-section h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.info-grid {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.team-code {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: var(--secondary-color);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.team-code code {
+    font-family: monospace;
+    font-size: 1.125rem;
+    color: var(--primary-color);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.section-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.member-select {
+    display: flex;
+    align-items: center;
+    min-width: 24px;
+}
+
+.member-checkbox {
+    display: none;
+}
+
+.member-checkbox + label {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition-speed);
+    background: white;
+}
+
+.member-checkbox + label:hover {
+    border-color: var(--primary-color);
+    background: var(--secondary-color);
+}
+
+.member-checkbox:checked + label {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.member-checkbox:checked + label::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.members-list {
+    display: grid;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--secondary-color);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+}
+
+.member-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--hover-shadow);
+}
+
+.member-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+}
+
+.member-name {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.badge {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--secondary-color);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.badge.lead {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.member-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.role-select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-color);
+    background: white;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.role-select:hover {
+    border-color: var(--primary-color);
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .content-card {
+        padding: var(--spacing-lg);
+    }
+
+    .team-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+
+    .team-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .member-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .member-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+</style>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Team code copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+}
+
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.member-checkbox:checked');
+    const bulkForm = document.getElementById('bulk-remove-form');
+    const membershipIds = Array.from(checkboxes).map(cb => cb.dataset.id).join(',');
+    
+    document.getElementById('membership-ids').value = membershipIds;
+    bulkForm.style.display = checkboxes.length > 0 ? 'block' : 'none';
+}
+</script>
+{% endblock %} 

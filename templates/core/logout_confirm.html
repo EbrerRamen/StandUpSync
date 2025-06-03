@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="content-header">
+        <h2>Logout</h2>
+    </div>
+
+    <div class="form-container">
+        <p>Are you sure you want to logout?</p>
+        <form method="post" class="standup-form">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="button primary">Yes, Logout</button>
+                <a href="{% url 'home' %}" class="button secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.content-header {
+    margin-bottom: 2rem;
+}
+
+.content-header h2 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+.form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.form-container p {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.button.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.button.secondary {
+    background: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+</style>
+{% endblock %} 

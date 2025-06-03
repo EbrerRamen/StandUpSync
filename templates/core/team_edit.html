@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="content-card">
+        <h2>Edit Team</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Team Name:</label>
+                <input type="text" name="name" id="name" value="{{ team.name }}" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button primary">Save Changes</button>
+                <a href="{% url 'team_detail' team.id %}" class="button secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.content-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+}
+
+.content-card h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions button,
+.form-actions a {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %} 

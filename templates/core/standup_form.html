@@ -1,0 +1,149 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="content-header">
+        <h2>{% if form.instance.id %}Edit{% else %}Create{% endif %} Stand-up Entry</h2>
+    </div>
+
+    <div class="form-container">
+        <form method="post" class="standup-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.team.id_for_label }}">Team:</label>
+                {{ form.team }}
+                {% if form.team.errors %}
+                <div class="error-message">{{ form.team.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.yesterday.id_for_label }}">Yesterday's Work:</label>
+                {{ form.yesterday }}
+                {% if form.yesterday.errors %}
+                <div class="error-message">{{ form.yesterday.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.today.id_for_label }}">Today's Plan:</label>
+                {{ form.today }}
+                {% if form.today.errors %}
+                <div class="error-message">{{ form.today.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.blockers.id_for_label }}">Blockers:</label>
+                {{ form.blockers }}
+                {% if form.blockers.errors %}
+                <div class="error-message">{{ form.blockers.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="button primary">Save Entry</button>
+                <a href="{% url 'standup_list' %}" class="button secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.content-header {
+    margin-bottom: 2rem;
+}
+
+.content-header h2 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+.form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.standup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group textarea,
+.form-group select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.button.primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.button.secondary {
+    background: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+</style>
+{% endblock %} 

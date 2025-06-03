@@ -1,0 +1,211 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="standup-detail">
+        <div class="standup-header">
+            <div class="header-content">
+                <h2>Stand-up Entry</h2>
+                <div class="meta-info">
+                    <span class="team-name">{{ entry.team.name }}</span>
+                    <span class="date">{{ entry.date|date:"F d, Y" }}</span>
+                    <span class="status {{ entry.status }}">{{ entry.get_status_display }}</span>
+                </div>
+            </div>
+            {% if entry.can_edit %}
+            <div class="header-actions">
+                <a href="{% url 'standup_edit' entry.id %}" class="button secondary">Edit</a>
+                <a href="{% url 'standup_delete' entry.id %}" class="button danger">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if entry.ai_summary %}
+        <div class="ai-summary">
+            <div class="summary-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                    <path d="M8.5 8.5v.01"/>
+                    <path d="M16 15.5v.01"/>
+                    <path d="M12 12v.01"/>
+                    <path d="M11 17v.01"/>
+                    <path d="M7 14v.01"/>
+                </svg>
+                <h3>AI Summary</h3>
+            </div>
+            <p>{{ entry.ai_summary }}</p>
+        </div>
+        {% endif %}
+
+        <div class="standup-content">
+            <div class="content-section">
+                <h3>Yesterday's Work</h3>
+                <p>{{ entry.yesterday }}</p>
+            </div>
+            <div class="content-section">
+                <h3>Today's Plan</h3>
+                <p>{{ entry.today }}</p>
+            </div>
+            {% if entry.blockers %}
+            <div class="content-section">
+                <h3>Blockers</h3>
+                <p>{{ entry.blockers }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.standup-detail {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.standup-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.header-content h2 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color);
+}
+
+.meta-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.team-name {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.date {
+    color: var(--text-secondary);
+}
+
+.status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status.active {
+    background: var(--success-color);
+    color: white;
+}
+
+.status.resolved {
+    background: var(--info-color);
+    color: white;
+}
+
+.status.archived {
+    background: var(--text-secondary);
+    color: white;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.ai-summary {
+    padding: 1.5rem;
+    background: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.summary-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.125rem;
+}
+
+.summary-header svg {
+    color: var(--primary-color);
+}
+
+.ai-summary p {
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.standup-content {
+    padding: 1.5rem;
+}
+
+.content-section {
+    margin-bottom: 2rem;
+}
+
+.content-section:last-child {
+    margin-bottom: 0;
+}
+
+.content-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-color);
+    font-size: 1.125rem;
+}
+
+.content-section p {
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+
+    .standup-header {
+        flex-direction: column;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions a {
+        flex: 1;
+    }
+
+    .meta-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %} 

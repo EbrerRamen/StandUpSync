@@ -1,0 +1,155 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="content-card">
+        <div class="card-header">
+            <h2>Edit Stand-up Entry</h2>
+            <p class="text-secondary">Update your stand-up entry for {{ entry.date|date:"F j, Y" }}</p>
+        </div>
+        <form method="post" class="form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="yesterday">What did you do yesterday?</label>
+                <textarea name="yesterday" id="yesterday" rows="3" required placeholder="List your completed tasks from yesterday...">{{ entry.yesterday }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="today">What will you do today?</label>
+                <textarea name="today" id="today" rows="3" required placeholder="List your planned tasks for today...">{{ entry.today }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="blockers">Any blockers?</label>
+                <textarea name="blockers" id="blockers" rows="2" placeholder="List any blockers or issues you're facing...">{{ entry.blockers }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" id="status" required>
+                    <option value="active" {% if entry.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="resolved" {% if entry.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="archived" {% if entry.status == 'archived' %}selected{% endif %}>Archived</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Update Entry
+                </button>
+                <a href="{% url 'home' %}" class="button secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.form {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background: white;
+    transition: all 0.2s;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions button,
+.form-actions a {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+@media (max-width: 640px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .content-card {
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+</style>
+{% endblock %} 

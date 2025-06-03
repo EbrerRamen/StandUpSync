@@ -1,0 +1,105 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Register</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password1">Password:</label>
+                <input type="password" name="password1" id="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="password2">Confirm Password:</label>
+                <input type="password" name="password2" id="password2" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button primary">Register</button>
+            </div>
+        </form>
+        <p class="auth-links">
+            Already have an account? <a href="{% url 'login' %}" class="link">Login here</a>
+        </p>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+}
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-card h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+}
+
+.form-actions button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+}
+
+.auth-links {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+</style>
+{% endblock %}
