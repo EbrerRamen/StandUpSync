@@ -22,9 +22,9 @@ class User(AbstractUser):
 class Team(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    invite_code = models.CharField(max_length=10, unique=True, default=uuid.uuid4)
-    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_teams')
+    invite_code = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_teams')
     members = models.ManyToManyField(User, related_name='teams')
 
     def __str__(self):
