@@ -284,9 +284,9 @@ def standup_create(request):
             return HttpResponseForbidden("You are not a member of this team")
         
         # Generate summaries
-        yesterday_summary = summarize_text(yesterday)
-        today_summary = summarize_text(today)
-        blockers_summary = summarize_text(blockers) if blockers else None
+        yesterday_summary = None
+        today_summary = None
+        blockers_summary = None
         
         # Create the standup entry
         standup = StandUpEntry.objects.create(
@@ -360,9 +360,9 @@ def standup_edit(request, entry_id):
             })
         
         # Generate summaries
-        yesterday_summary = summarize_text(yesterday)
-        today_summary = summarize_text(today)
-        blockers_summary = summarize_text(blockers) if blockers else None
+        yesterday_summary = None
+        today_summary = None
+        blockers_summary = None
         
         entry.yesterday = yesterday
         entry.today = today
