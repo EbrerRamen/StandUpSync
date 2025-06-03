@@ -11,6 +11,7 @@ urlpatterns = [
     path('team/<int:team_id>/leave/', views.team_leave, name='team_leave'),
     path('team/<int:team_id>/delete/', views.team_delete, name='team_delete'),
     path('team/<int:team_id>/member/<int:membership_id>/remove/', views.team_remove_member, name='team_remove_member'),
+    path('team/<int:team_id>/member/<int:membership_id>/change_role/', views.team_change_role, name='team_change_role'),
     
     # Stand-up management
     path('standup/new/', views.standup_create, name='standup_create'),
