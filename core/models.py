@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
     is_team_lead = models.BooleanField(default=False)
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.username
 
 class Team(models.Model):
     name = models.CharField(max_length=100)

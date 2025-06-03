@@ -29,12 +29,20 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user) # Log in user after registration
-            return redirect('home')
+            try:
+                user = form.save()
+                login(request, user)
+                return redirect('home')
+            except Exception as e:
+                logger.error(f"Error during user registration: {str(e)}")
+                messages.error(request, 'An error occurred during registration. Please try again.')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
         form = CustomUserCreationForm()
-    return render(request, 'core/register.html', {'form':form})
+    return render(request, 'core/register.html', {'form': form})
 
 @login_required
 def home(request):
