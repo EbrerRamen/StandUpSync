@@ -232,35 +232,49 @@
                 .header-content {
                     flex-direction: column;
                     height: auto;
-                    padding: var(--spacing-md) 0;
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    align-items: flex-start;
+                }
+
+                .logo {
+                    margin-bottom: var(--spacing-md);
+                }
+
+                .user-info {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                .username {
+                    margin-bottom: var(--spacing-sm);
                 }
 
                 nav {
                     position: static;
                     height: auto;
+                    box-shadow: none;
                 }
 
                 .nav-links {
                     flex-direction: column;
                     height: auto;
-                    padding: var(--spacing-md) 0;
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    align-items: flex-start;
+                    gap: var(--spacing-sm);
                 }
 
                 .nav-links a {
                     width: 100%;
-                    text-align: center;
+                    text-align: left;
+                    padding: var(--spacing-sm) 0;
                 }
 
                 main {
                     margin-top: 0;
+                    padding-top: var(--spacing-xl);
                 }
 
-                .user-info {
-                    flex-direction: column;
-                    align-items: flex-end;
-                }
-                .username {
-                    margin-bottom: var(--spacing-sm);
+                .logout-button {
+                    padding: var(--spacing-sm) 0;
                 }
             }
 
