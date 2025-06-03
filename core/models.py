@@ -117,21 +117,25 @@ class Standup(models.Model):
     def save(self, *args, **kwargs):
         logger.info("Starting summary generation for standup entry")
         
-        # Generate summaries if they don't exist
-        if not self.yesterday_summary and self.yesterday:
-            logger.info("Generating summary for yesterday's work")
-            self.yesterday_summary = summarize_text(self.yesterday)
-            logger.info(f"Generated yesterday summary: {self.yesterday_summary}")
-            
-        if not self.today_summary and self.today:
-            logger.info("Generating summary for today's work")
-            self.today_summary = summarize_text(self.today)
-            logger.info(f"Generated today summary: {self.today_summary}")
-            
-        if not self.blockers_summary and self.blockers:
-            logger.info("Generating summary for blockers")
-            self.blockers_summary = summarize_text(self.blockers)
-            logger.info(f"Generated blockers summary: {self.blockers_summary}")
+        try:
+            # Generate summaries if they don't exist
+            if not self.yesterday_summary and self.yesterday:
+                logger.info("Generating summary for yesterday's work")
+                self.yesterday_summary = summarize_text(self.yesterday)
+                logger.info(f"Generated yesterday summary: {self.yesterday_summary}")
+                
+            if not self.today_summary and self.today:
+                logger.info("Generating summary for today's work")
+                self.today_summary = summarize_text(self.today)
+                logger.info(f"Generated today summary: {self.today_summary}")
+                
+            if not self.blockers_summary and self.blockers:
+                logger.info("Generating summary for blockers")
+                self.blockers_summary = summarize_text(self.blockers)
+                logger.info(f"Generated blockers summary: {self.blockers_summary}")
+        except Exception as e:
+            logger.error(f"Error during summary generation: {str(e)}")
+            # Continue saving without summaries if there's an error
             
         super().save(*args, **kwargs)
 
